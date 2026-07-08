@@ -1,0 +1,46 @@
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%);
+  padding: 1.5rem;
+}
+
+body.dark-theme .login-wrapper {
+  background: linear-gradient(135deg, #1e1b4b 0%, #030712 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 24px !important;
+  padding: 2.5rem !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+}
+
+body.dark-theme .login-card {
+  background: rgba(17, 24, 39, 0.85) !important;
+  border-color: #374151 !important;
+}
+
+.logo-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+  background-color: var(--accent) !important;
+}
+
+.form-floating > .form-control {
+  background-color: transparent !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.form-floating > .form-control:focus {
+  border-color: var(--accent) !important;
+}

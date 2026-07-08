@@ -1,0 +1,83 @@
+.lead-drawer {
+  width: 520px;
+}
+
+.scroll-drawer {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.table-light-header th {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-display);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color) !important;
+  font-size: 0.85rem;
+  padding: 1rem 0.75rem !important;
+}
+
+.table td {
+  padding: 1rem 0.75rem !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.bg-light-pagination {
+  background-color: var(--bg-secondary) !important;
+}
+
+.pagination .page-link {
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-secondary) !important;
+  background-color: var(--bg-primary) !important;
+  border-radius: 6px;
+  margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #ffffff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+  background-color: var(--bg-secondary) !important;
+  opacity: 0.5;
+}
+
+/* Sliding Drawer Styles (duplicated or referenced for leads.css context) */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  background: var(--bg-secondary) !important;
+  border-left: 1px solid var(--border-color);
+  border-radius: 0 !important;
+  z-index: 1001;
+  padding: 2.5rem 2rem !important;
+  animation: slideInLead 0.3s ease forwards;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+@keyframes slideInLead {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

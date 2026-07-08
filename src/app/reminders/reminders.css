@@ -1,0 +1,35 @@
+.reminder-card {
+  padding: 1.5rem !important;
+}
+
+.border-overdue {
+  border: 1px solid rgba(239, 68, 68, 0.45) !important;
+  box-shadow: 0 8px 32px 0 rgba(239, 68, 68, 0.05) !important;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-pills .nav-link {
+  color: var(--text-secondary) !important;
+  font-family: var(--font-display);
+  font-weight: 500;
+  border-radius: 10px;
+  padding: 0.6rem;
+  transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link:hover {
+  background-color: var(--bg-primary);
+  color: var(--text-primary) !important;
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--accent) !important;
+  color: #ffffff !important;
+}

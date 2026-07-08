@@ -1,0 +1,243 @@
+<div class="mb-4">
+  <a class="text-decoration-none small text-secondary" routerLink="/leads">
+    <i class="bi bi-arrow-left me-1"></i>Back to Customer Leads
+  </a>
+</div>
+
+@if (isLoading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else {
+  @if (lead()) {
+    <div class="row g-4">
+      <!-- Left Column: Lead Summary & Notes -->
+      <div class="col-lg-6">
+        <!-- Lead Details summary card -->
+        <div class="glass-card mb-4">
+          <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+            <div>
+              <span class="badge bg-primary-subtle text-primary mb-2">{{ lead()?.leadType?.name }}</span>
+              <h3 class="fw-bold font-display text-primary mb-1">{{ lead()?.customerName }}</h3>
+              <span class="text-secondary small"><i class="bi bi-geo-alt-fill me-1"></i>{{ lead()?.city || 'No City' }}</span>
+            </div>
+            
+            <div class="d-flex flex-column align-items-end gap-2">
+              <span class="badge badge-status" [class]="lead()?.status?.toLowerCase()?.replace(' ', '')">
+                {{ lead()?.status }}
+              </span>
+              <div class="priority-indicator">
+                <span class="priority-dot" [class]="lead()?.priority?.toLowerCase()?.replace(' ', '_')"></span>
+                <span class="small text-secondary fw-bold">{{ lead()?.priority }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <span class="text-secondary small d-block">Mobile Number</span>
+              <span class="fw-medium">{{ lead()?.mobile }}</span>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary small d-block">Alternate Number</span>
+              <span class="fw-medium">{{ lead()?.alternateNumber || '-' }}</span>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary small d-block">Email Address</span>
+              <span class="fw-medium text-break">{{ lead()?.email || '-' }}</span>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary small d-block">Lead Source</span>
+              <span class="fw-medium">{{ lead()?.leadSource }}</span>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary small d-block">Visit Date</span>
+              <span class="fw-medium">{{ formatDate(lead()?.visitDate) }}</span>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary small d-block">Next Follow-up</span>
+              <span class="fw-medium text-warning">{{ formatDate(lead()?.nextFollowupDate) }}</span>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary small d-block">Assigned Exec.</span>
+              <span class="fw-medium">{{ lead()?.assignedExecutive || '-' }}</span>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary small d-block">Created Date</span>
+              <span class="fw-medium">{{ formatDate(lead()?.createdDate) }}</span>
+            </div>
+            <div class="col-12">
+              <span class="text-secondary small d-block">Requirement Details</span>
+              <p class="mb-0 bg-light p-3 rounded-3 text-secondary text-pre-line">{{ lead()?.requirement || 'No requirements described.' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes Module -->
+        <div class="glass-card">
+          <h5 class="fw-bold font-display text-primary mb-3">Notes & Comments</h5>
+          
+          <!-- Note Add form -->
+          <div class="input-group mb-4">
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Type a note and hit enter..." 
+              [(ngModel)]="newNoteText" 
+              (keyup.enter)="onAddNote()">
+            <button class="btn btn-primary px-3" (click)="onAddNote()">Add Note</button>
+          </div>
+
+          <!-- Notes List -->
+          <div class="notes-list d-flex flex-column gap-3">
+            @for (note of notes(); track note.id) {
+              <div class="note-item p-3 border rounded-3 bg-light d-flex justify-content-between align-items-start">
+                <div class="pe-2">
+                  <p class="mb-1 text-secondary text-pre-line">{{ note.noteText }}</p>
+                  <div class="d-flex align-items-center gap-2 small text-muted font-display">
+                    <span>By: <strong>{{ note.createdBy }}</strong></span>
+                    <span>•</span>
+                    <span>{{ formatDateTime(note.createdDate) }}</span>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-danger border-0 rounded-circle py-1" (click)="onDeleteNote(note.id!)" title="Delete Note">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            } @empty {
+              <div class="text-center py-4 text-secondary small">
+                <i class="bi bi-journal-text fs-2 mb-2 d-block text-muted"></i>
+                <span>No notes logged yet.</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Follow-up History & Actions -->
+      <div class="col-lg-6">
+        <div class="glass-card h-100">
+          <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <h5 class="fw-bold font-display text-primary mb-0">Follow-up History</h5>
+            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" (click)="openFollowUpForm()">
+              <i class="bi bi-plus-lg"></i>
+              <span>Log Follow-up</span>
+            </button>
+          </div>
+
+          <!-- Follow-up Timeline -->
+          <div class="timeline">
+            @for (history of followups(); track history.id) {
+              <div class="timeline-item">
+                <div class="timeline-marker bg-primary"></div>
+                <div class="timeline-content glass-card p-3 mb-3 border-0 bg-light shadow-none">
+                  <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom border-secondary-subtle">
+                    <span class="small text-muted fw-bold">By: {{ history.executive }}</span>
+                    <span class="small text-muted">{{ formatDateTime(history.followupDate) }}</span>
+                  </div>
+                  
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <span class="text-secondary small d-block">Status Update</span>
+                      <span class="badge badge-status" [class]="history.status.toLowerCase().replace(' ', '')">{{ history.status }}</span>
+                    </div>
+                    <div class="col-6">
+                      <span class="text-secondary small d-block">Priority Update</span>
+                      <span class="priority-indicator">
+                        <span class="priority-dot" [class]="history.priority.toLowerCase().replace(' ', '_')"></span>
+                        <span class="small text-secondary">{{ history.priority }}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="mb-2">
+                    <span class="text-secondary small d-block">Discussion Details</span>
+                    <p class="mb-0 text-secondary small text-pre-line">{{ history.discussionDetails }}</p>
+                  </div>
+
+                  @if (history.nextFollowupDate) {
+                    <div>
+                      <span class="text-secondary small">Next Follow-up: </span>
+                      <span class="small text-warning font-display fw-bold">{{ formatDate(history.nextFollowupDate) }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="text-center py-5 text-secondary">
+                <i class="bi bi-clock-history fs-1 mb-3 d-block text-muted"></i>
+                <p>No follow-ups recorded yet for this lead.</p>
+                <button class="btn btn-primary btn-sm mt-2" (click)="openFollowUpForm()">Log First Follow-up</button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+<!-- Follow-up Log Drawer Panel -->
+@if (showFollowUpForm()) {
+  <div class="drawer-overlay" (click)="closeFollowUpForm()"></div>
+  <div class="drawer glass-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+      <h5 class="fw-bold font-display text-primary mb-0">Log Follow-up</h5>
+      <button class="btn-close" (click)="closeFollowUpForm()"></button>
+    </div>
+
+    <form [formGroup]="followUpForm" (ngSubmit)="onSubmitFollowUp()">
+      <!-- Executive -->
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">Executive *</label>
+        <input type="text" class="form-control" formControlName="executive" placeholder="Executive Name" readonly>
+      </div>
+
+      <!-- Status & Priority -->
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Status *</label>
+          <select class="form-select" formControlName="status">
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Priority *</label>
+          <select class="form-select" formControlName="priority">
+            @for (p of priorities; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Next Follow-up Date -->
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">Next Follow-up Date *</label>
+        <input type="date" class="form-control" formControlName="nextFollowupDate">
+        @if (followUpForm.get('nextFollowupDate')?.touched && followUpForm.get('nextFollowupDate')?.invalid) {
+          <div class="text-danger small mt-1">Please select next follow-up date.</div>
+        }
+      </div>
+
+      <!-- Discussion Details -->
+      <div class="mb-4">
+        <label class="form-label text-secondary small fw-bold">Discussion Details *</label>
+        <textarea class="form-control" rows="4" formControlName="discussionDetails" placeholder="Type what was discussed..."></textarea>
+        @if (followUpForm.get('discussionDetails')?.touched && followUpForm.get('discussionDetails')?.invalid) {
+          <div class="text-danger small mt-1">Details must be at least 5 characters.</div>
+        }
+      </div>
+
+      <!-- Form Actions -->
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-secondary w-50" (click)="closeFollowUpForm()">Cancel</button>
+        <button type="submit" class="btn btn-primary w-50" [disabled]="followUpForm.invalid">Submit Log</button>
+      </div>
+    </form>
+  </div>
+}

@@ -1,0 +1,396 @@
+<div class="page-title-area">
+  <div>
+    <h2 class="page-title font-display fw-bold mb-1">Customer Leads</h2>
+    <p class="text-secondary mb-0">Track and manage customer communications</p>
+  </div>
+  
+  <div class="d-flex gap-2 align-items-center">
+    <!-- Import File Input -->
+    <input #csvInput type="file" (change)="onFileSelected($event)" accept=".csv" style="display:none">
+    <button class="btn btn-outline-primary d-flex align-items-center gap-2" (click)="onImportClick(csvInput)">
+      <i class="bi bi-file-earmark-arrow-up-fill"></i>
+      <span>Import CSV</span>
+    </button>
+
+    <!-- Export Buttons -->
+    <div class="dropdown">
+      <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-download"></i>
+        <span>Export</span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+        <li>
+          <a class="dropdown-item" (click)="exportToExcel()">
+            <i class="bi bi-file-earmark-excel text-success me-2"></i>Export Excel
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" (click)="exportToPdf()">
+            <i class="bi bi-file-earmark-pdf text-danger me-2"></i>Export PDF
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Add Lead button -->
+    <button class="btn btn-primary d-flex align-items-center gap-2" (click)="openCreateForm()">
+      <i class="bi bi-plus-lg"></i>
+      <span>Add Lead</span>
+    </button>
+  </div>
+</div>
+
+<!-- Import CSV result banner -->
+@if (importResult()) {
+  <div class="alert alert-success border-0 rounded-4 shadow-sm mb-4 p-3 d-flex justify-content-between align-items-center animate-fade">
+    <div>
+      <h6 class="fw-bold mb-1">CSV Imported Successfully!</h6>
+      <span class="small text-secondary me-3">Total Rows: {{ importResult().total }}</span>
+      <span class="small text-success me-3">Success: {{ importResult().success }}</span>
+      <span class="small text-danger">Errors: {{ importResult().errorsCount }}</span>
+      @if (importResult().errors.length > 0) {
+        <details class="mt-2 small text-secondary">
+          <summary>View Details</summary>
+          <ul>
+            @for (err of importResult().errors; track $index) {
+              <li>{{ err }}</li>
+            }
+          </ul>
+        </details>
+      }
+    </div>
+    <button class="btn-close" (click)="importResult.set(null)"></button>
+  </div>
+}
+
+<!-- Filters & Search panel -->
+<div class="glass-card mb-4 p-4">
+  <div class="row g-3">
+    <!-- Global search -->
+    <div class="col-12 col-md-4">
+      <label class="form-label text-secondary small fw-bold">Search</label>
+      <div class="input-group">
+        <span class="input-group-text bg-transparent border-end-0 text-muted">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" class="form-control border-start-0 ps-0" placeholder="Name, Mobile, Email..." [(ngModel)]="globalSearch" (keyup.enter)="onFilter()">
+      </div>
+    </div>
+
+    <!-- Filter Status -->
+    <div class="col-6 col-md-2">
+      <label class="form-label text-secondary small fw-bold">Status</label>
+      <select class="form-select" [(ngModel)]="filterStatus" (change)="onFilter()">
+        <option value="">All Statuses</option>
+        @for (s of statuses; track s) {
+          <option [value]="s">{{ s }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filter Priority -->
+    <div class="col-6 col-md-2">
+      <label class="form-label text-secondary small fw-bold">Priority</label>
+      <select class="form-select" [(ngModel)]="filterPriority" (change)="onFilter()">
+        <option value="">All Priorities</option>
+        @for (p of priorities; track p) {
+          <option [value]="p">{{ p }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filter Lead Type -->
+    <div class="col-6 col-md-2">
+      <label class="form-label text-secondary small fw-bold">Sector / Type</label>
+      <select class="form-select" [(ngModel)]="filterLeadTypeId" (change)="onFilter()">
+        <option value="">All Types</option>
+        @for (t of leadTypes(); track t.id) {
+          <option [value]="t.id">{{ t.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filter City -->
+    <div class="col-6 col-md-2">
+      <label class="form-label text-secondary small fw-bold">City</label>
+      <input type="text" class="form-control" placeholder="e.g. Chennai" [(ngModel)]="filterCity" (keyup.enter)="onFilter()">
+    </div>
+
+    <!-- Filter Dates -->
+    <div class="col-6 col-md-3">
+      <label class="form-label text-secondary small fw-bold">Start Date</label>
+      <input type="date" class="form-control" [(ngModel)]="filterStartDate" (change)="onFilter()">
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label text-secondary small fw-bold">End Date</label>
+      <input type="date" class="form-control" [(ngModel)]="filterEndDate" (change)="onFilter()">
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label text-secondary small fw-bold">Customer Name</label>
+      <input type="text" class="form-control" placeholder="Search Name" [(ngModel)]="filterName" (keyup.enter)="onFilter()">
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label text-secondary small fw-bold">Mobile</label>
+      <input type="text" class="form-control" placeholder="Search Mobile" [(ngModel)]="filterMobile" (keyup.enter)="onFilter()">
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+    <button class="btn btn-outline-secondary btn-sm px-4" (click)="clearFilters()">Clear Filters</button>
+    <button class="btn btn-primary btn-sm px-4" (click)="onFilter()">Apply Filters</button>
+  </div>
+</div>
+
+<!-- Table of Leads -->
+<div class="glass-card p-0 overflow-hidden shadow-sm">
+  @if (isLoading()) {
+    <div class="d-flex justify-content-center align-items-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr class="table-light-header">
+            <th>Name</th>
+            <th>Contact Details</th>
+            <th>Type</th>
+            <th>Source</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Next Follow-up</th>
+            <th class="text-end pe-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (lead of leads(); track lead.id) {
+            <tr>
+              <td>
+                <div class="fw-bold text-primary">{{ lead.customerName }}</div>
+                <span class="text-muted small"><i class="bi bi-geo-alt-fill me-1"></i>{{ lead.city || 'No City' }}</span>
+              </td>
+              <td>
+                <div><i class="bi bi-telephone-fill me-2 small text-muted"></i>{{ lead.mobile }}</div>
+                @if (lead.email) {
+                  <div class="small text-muted"><i class="bi bi-envelope-fill me-2 small"></i>{{ lead.email }}</div>
+                }
+              </td>
+              <td>
+                <span class="badge bg-light text-dark border px-2 py-1">{{ lead.leadType.name }}</span>
+              </td>
+              <td>{{ lead.leadSource }}</td>
+              <td>
+                <span class="badge badge-status" [class]="lead.status.toLowerCase().replace(' ', '')">
+                  {{ lead.status }}
+                </span>
+              </td>
+              <td>
+                <div class="priority-indicator">
+                  <span class="priority-dot" [class]="lead.priority.toLowerCase().replace(' ', '_')"></span>
+                  <span class="small text-secondary">{{ lead.priority }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="small">{{ formatDate(lead.nextFollowupDate) }}</span>
+              </td>
+              <td class="text-end pe-4">
+                <div class="d-flex justify-content-end gap-1">
+                  <!-- WhatsApp button -->
+                  <button class="btn btn-sm btn-outline-success border-0 rounded-circle" (click)="openWhatsApp(lead)" title="WhatsApp Chat">
+                    <i class="bi bi-whatsapp"></i>
+                  </button>
+                  <!-- View details button -->
+                  <a class="btn btn-sm btn-outline-info border-0 rounded-circle" [routerLink]="['/leads', lead.id]" title="View History & Notes">
+                    <i class="bi bi-clock-history"></i>
+                  </a>
+                  <!-- Edit button -->
+                  <button class="btn btn-sm btn-outline-secondary border-0 rounded-circle" (click)="openEditForm(lead)" title="Edit">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <!-- Delete button -->
+                  <button class="btn btn-sm btn-outline-danger border-0 rounded-circle" (click)="onDelete(lead.id!)" title="Delete">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="text-center py-5 text-secondary">
+                <i class="bi bi-people fs-1 mb-3 d-block text-muted"></i>
+                <p class="mb-0">No customer leads found matching criteria.</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light-pagination">
+        <span class="text-secondary small">Total Elements: {{ totalElements() }}</span>
+        
+        <nav aria-label="Leads Page Navigation">
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="page() === 0">
+              <button class="page-link" (click)="changePage(page() - 1)"><i class="bi bi-chevron-left"></i></button>
+            </li>
+            
+            @for (idx of [].constructor(totalPages()); track $index) {
+              <li class="page-item" [class.active]="$index === page()">
+                <button class="page-link" (click)="changePage($index)">{{ $index + 1 }}</button>
+              </li>
+            }
+
+            <li class="page-item" [class.disabled]="page() === totalPages() - 1">
+              <button class="page-link" (click)="changePage(page() + 1)"><i class="bi bi-chevron-right"></i></button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    }
+  }
+</div>
+
+<!-- Add/Edit Lead Drawer Panel -->
+@if (showForm()) {
+  <div class="drawer-overlay" (click)="closeForm()"></div>
+  <div class="drawer lead-drawer glass-card scroll-drawer">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+      <h5 class="fw-bold font-display text-primary mb-0">
+        {{ selectedLead() ? 'Edit Customer Lead' : 'Add Customer Lead' }}
+      </h5>
+      <button class="btn-close" (click)="closeForm()"></button>
+    </div>
+
+    <form [formGroup]="leadForm" (ngSubmit)="onSubmit()">
+      <!-- Customer Name -->
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">Customer Name *</label>
+        <input type="text" class="form-control" formControlName="customerName" placeholder="e.g. John Doe">
+        @if (leadForm.get('customerName')?.touched && leadForm.get('customerName')?.invalid) {
+          <div class="text-danger small mt-1">Name is required.</div>
+        }
+      </div>
+
+      <!-- Mobile & Alternate Number -->
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Mobile *</label>
+          <input type="text" class="form-control" formControlName="mobile" placeholder="e.g. 9876543210">
+          @if (leadForm.get('mobile')?.touched && leadForm.get('mobile')?.invalid) {
+            <div class="text-danger small mt-1">Provide a valid 10-15 digit mobile.</div>
+          }
+        </div>
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Alternate No.</label>
+          <input type="text" class="form-control" formControlName="alternateNumber" placeholder="Optional">
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">Email Address</label>
+        <input type="email" class="form-control" formControlName="email" placeholder="e.g. customer@mail.com">
+        @if (leadForm.get('email')?.touched && leadForm.get('email')?.invalid) {
+          <div class="text-danger small mt-1">Enter a valid email.</div>
+        }
+      </div>
+
+      <!-- Sector / Lead Type -->
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">Lead Sector *</label>
+        <select class="form-select" formControlName="leadTypeId">
+          <option value="" disabled>Select Sector</option>
+          @for (type of leadTypes(); track type.id) {
+            <option [value]="type.id">{{ type.name }}</option>
+          }
+        </select>
+        @if (leadForm.get('leadTypeId')?.touched && leadForm.get('leadTypeId')?.invalid) {
+          <div class="text-danger small mt-1">Lead sector type is required.</div>
+        }
+      </div>
+
+      <!-- Lead Status & Priority -->
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Status *</label>
+          <select class="form-select" formControlName="status">
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Priority *</label>
+          <select class="form-select" formControlName="priority">
+            @for (p of priorities; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- City & Address -->
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">City</label>
+        <input type="text" class="form-control" formControlName="city" placeholder="e.g. Chennai">
+      </div>
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">Address</label>
+        <textarea class="form-control" rows="2" formControlName="address" placeholder="Customer address..."></textarea>
+      </div>
+
+      <!-- Requirement -->
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">Requirement Details</label>
+        <textarea class="form-control" rows="2" formControlName="requirement" placeholder="Specifications/Requirements..."></textarea>
+      </div>
+
+      <!-- Source & Assigned Executive -->
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Lead Source</label>
+          <select class="form-select" formControlName="leadSource">
+            @for (src of sources; track src) {
+              <option [value]="src">{{ src }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Assigned Exec.</label>
+          <input type="text" class="form-control" formControlName="assignedExecutive" placeholder="Name">
+        </div>
+      </div>
+
+      <!-- Discussion Details -->
+      <div class="mb-3">
+        <label class="form-label text-secondary small fw-bold">Latest Discussion Details</label>
+        <textarea class="form-control" rows="2" formControlName="discussionDetails" placeholder="Details of latest talk..."></textarea>
+      </div>
+
+      <!-- Follow-up Dates -->
+      <div class="row g-2 mb-4">
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Visit Date</label>
+          <input type="date" class="form-control" formControlName="visitDate">
+        </div>
+        <div class="col-6">
+          <label class="form-label text-secondary small fw-bold">Next Follow-up Date</label>
+          <input type="date" class="form-control" formControlName="nextFollowupDate">
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-secondary w-50" (click)="closeForm()">Cancel</button>
+        <button type="submit" class="btn btn-primary w-50" [disabled]="leadForm.invalid">
+          {{ selectedLead() ? 'Save Changes' : 'Create Lead' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}

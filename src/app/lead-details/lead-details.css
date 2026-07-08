@@ -1,0 +1,63 @@
+.text-pre-line {
+  white-space: pre-line;
+}
+
+.notes-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.note-item {
+  border-color: var(--border-color) !important;
+  background-color: var(--bg-primary) !important;
+}
+
+body.dark-theme .note-item {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Timeline Styles */
+.timeline {
+  position: relative;
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 5px;
+  width: 2px;
+  background-color: var(--border-color);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  top: 14px;
+  left: -20px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent) !important;
+  border: 2px solid var(--bg-secondary);
+  z-index: 2;
+  box-shadow: 0 0 0 2px var(--border-color);
+}
+
+.timeline-content {
+  background-color: var(--bg-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+}
+
+body.dark-theme .timeline-content {
+  background-color: var(--bg-secondary) !important;
+}

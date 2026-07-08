@@ -1,0 +1,58 @@
+<div class="login-wrapper">
+  <div class="glass-card login-card text-center">
+    <div class="mb-4">
+      <div class="logo-icon bg-primary text-white mx-auto mb-3">
+        <i class="bi bi-rocket-takeoff fs-2"></i>
+      </div>
+      <h2 class="fw-bold font-display text-primary">LeadCRM</h2>
+      <p class="text-secondary small">Sign in to manage your customer leads</p>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="alert alert-danger border-0 rounded-3 text-start small mb-4 py-2 px-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-floating mb-3 text-start">
+        <input 
+          type="text" 
+          class="form-control" 
+          id="usernameInput" 
+          placeholder="username" 
+          formControlName="username">
+        <label for="usernameInput" class="text-secondary">Username</label>
+      </div>
+
+      <div class="form-floating mb-4 text-start">
+        <input 
+          type="password" 
+          class="form-control" 
+          id="passwordInput" 
+          placeholder="Password" 
+          formControlName="password">
+        <label for="passwordInput" class="text-secondary">Password</label>
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-primary w-100 py-3 fw-bold" 
+        [disabled]="loginForm.invalid || isLoading()">
+        @if (isLoading()) {
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Signing In...
+        } @else {
+          Sign In
+        }
+      </button>
+    </form>
+
+    <div class="mt-4 text-secondary small">
+      <span class="d-block mb-1">Demo Credentials:</span>
+      <span class="badge bg-light text-dark border me-1">admin / admin123</span>
+      <span class="badge bg-light text-dark border">executive / exec123</span>
+    </div>
+  </div>
+</div>

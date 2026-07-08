@@ -1,0 +1,117 @@
+<div class="page-title-area">
+  <div>
+    <h2 class="page-title font-display fw-bold mb-1">Dashboard</h2>
+    <p class="text-secondary mb-0">Overview of your lead pipeline and activities</p>
+  </div>
+  <button class="btn btn-primary d-flex align-items-center gap-2" (click)="loadStats()">
+    <i class="bi bi-arrow-clockwise"></i>
+    <span>Refresh Stats</span>
+  </button>
+</div>
+
+@if (isLoading()) {
+  <div class="d-flex justify-content-center align-items-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else {
+  @if (stats()) {
+    <!-- KPI Summary Grid -->
+    <div class="row g-4 mb-5">
+      <!-- Total Leads -->
+      <div class="col-md-6 col-lg-3">
+        <div class="glass-card h-100 kpi-card d-flex align-items-center">
+          <div class="kpi-icon bg-primary-subtle text-primary me-3">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div>
+            <span class="text-secondary small d-block">Total Leads</span>
+            <h3 class="fw-bold mb-0">{{ stats()?.totalLeads }}</h3>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Today's Followups -->
+      <div class="col-md-6 col-lg-3">
+        <div class="glass-card h-100 kpi-card d-flex align-items-center">
+          <div class="kpi-icon bg-warning-subtle text-warning me-3">
+            <i class="bi bi-calendar-check-fill"></i>
+          </div>
+          <div>
+            <span class="text-secondary small d-block">Today's Follow-ups</span>
+            <h3 class="fw-bold mb-0">{{ stats()?.todayFollowups }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Followups -->
+      <div class="col-md-6 col-lg-3">
+        <div class="glass-card h-100 kpi-card d-flex align-items-center">
+          <div class="kpi-icon bg-danger-subtle text-danger me-3">
+            <i class="bi bi-exclamation-octagon-fill"></i>
+          </div>
+          <div>
+            <span class="text-secondary small d-block">Pending / Overdue</span>
+            <h3 class="fw-bold mb-0">{{ stats()?.pendingFollowups }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Closed Won -->
+      <div class="col-md-6 col-lg-3">
+        <div class="glass-card h-100 kpi-card d-flex align-items-center">
+          <div class="kpi-icon bg-success-subtle text-success me-3">
+            <i class="bi bi-trophy-fill"></i>
+          </div>
+          <div>
+            <span class="text-secondary small d-block">Closed Won Deals</span>
+            <h3 class="fw-bold mb-0">{{ stats()?.closedWonDeals }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-4">
+      <!-- Status Pipeline Chart -->
+      <div class="col-lg-5">
+        <div class="glass-card h-100">
+          <h5 class="fw-bold font-display mb-4">Lead Status Pipeline</h5>
+          <div class="chart-container">
+            <canvas #statusChart></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sector Analysis Chart -->
+      <div class="col-lg-7">
+        <div class="glass-card h-100">
+          <h5 class="fw-bold font-display mb-4">Sector Distribution</h5>
+          <div class="chart-container">
+            <canvas #sectorChart></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shortcuts Area -->
+    <div class="glass-card mt-4">
+      <h5 class="fw-bold font-display mb-3">Quick Actions</h5>
+      <div class="d-flex flex-wrap gap-3">
+        <a class="btn btn-outline-primary d-flex align-items-center gap-2 px-3 py-2 rounded-3 text-decoration-none" routerLink="/leads" [queryParams]="{ showCreate: true }">
+          <i class="bi bi-plus-circle"></i>
+          <span>Create New Lead</span>
+        </a>
+        <a class="btn btn-outline-warning d-flex align-items-center gap-2 px-3 py-2 rounded-3 text-decoration-none" routerLink="/reminders">
+          <i class="bi bi-bell"></i>
+          <span>Check Reminders</span>
+        </a>
+        <a class="btn btn-outline-info d-flex align-items-center gap-2 px-3 py-2 rounded-3 text-decoration-none" routerLink="/lead-types">
+          <i class="bi bi-list-task"></i>
+          <span>Manage Lead Sectors</span>
+        </a>
+      </div>
+    </div>
+  }
+}

@@ -1,0 +1,49 @@
+.type-card {
+  padding: 1.5rem !important;
+}
+
+.type-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sliding Drawer Styles */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  background: var(--bg-secondary) !important;
+  border-left: 1px solid var(--border-color);
+  border-radius: 0 !important;
+  z-index: 1001;
+  padding: 2.5rem 2rem !important;
+  animation: slideIn 0.3s ease forwards;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

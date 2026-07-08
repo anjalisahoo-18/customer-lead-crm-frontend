@@ -1,0 +1,79 @@
+@if (authService.isLoggedIn()) {
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <i class="bi bi-rocket-takeoff-fill me-2 fs-4"></i>
+        <span>LeadCRM Suite</span>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+          <i class="bi bi-grid-fill"></i>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" routerLink="/leads" routerLinkActive="active">
+          <i class="bi bi-people-fill"></i>
+          <span>Customer Leads</span>
+        </a>
+        <a class="nav-item" routerLink="/lead-types" routerLinkActive="active">
+          <i class="bi bi-list-task"></i>
+          <span>Lead Types</span>
+        </a>
+        <a class="nav-item" routerLink="/reminders" routerLinkActive="active">
+          <i class="bi bi-bell-fill"></i>
+          <span>Follow-up Reminders</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer User Profile -->
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar">
+            {{ authService.getUserName().substring(0, 1).toUpperCase() }}
+          </div>
+          <div class="user-meta">
+            <h6 class="user-name">{{ authService.getUserName() }}</h6>
+            <p class="user-role">{{ authService.currentRole() }}</p>
+          </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+          <!-- Theme Toggle -->
+          <button class="btn btn-outline-secondary w-50 border-0" (click)="toggleTheme()" title="Toggle Dark/Light Mode">
+            @if (isDark()) {
+              <i class="bi bi-sun-fill text-warning"></i>
+            } @else {
+              <i class="bi bi-moon-stars-fill"></i>
+            }
+          </button>
+          
+          <!-- Logout Button -->
+          <button class="btn btn-outline-danger w-50 border-0" (click)="logout()" title="Logout">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="main-content">
+      <header class="main-header">
+        <div class="d-flex align-items-center">
+          <h4 class="mb-0 font-display fw-bold">Customer Lead Management</h4>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+          <span class="text-secondary small">Session Active</span>
+          <span class="badge bg-success rounded-pill px-2 py-1">Online</span>
+        </div>
+      </header>
+
+      <section class="content-body">
+        <router-outlet></router-outlet>
+      </section>
+    </main>
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}

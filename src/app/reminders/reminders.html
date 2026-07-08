@@ -1,0 +1,107 @@
+<div class="page-title-area">
+  <div>
+    <h2 class="page-title font-display fw-bold mb-1">Follow-up Reminders</h2>
+    <p class="text-secondary mb-0">Track today's schedule and overdue customer calls</p>
+  </div>
+  <button class="btn btn-primary d-flex align-items-center gap-2" (click)="loadReminders()">
+    <i class="bi bi-arrow-clockwise"></i>
+    <span>Refresh List</span>
+  </button>
+</div>
+
+<!-- Tabs Panel -->
+<div class="glass-card mb-4 p-2">
+  <ul class="nav nav-pills nav-fill gap-2">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="filterMode() === 'all'" (click)="setFilterMode('all')">
+        <i class="bi bi-calendar-range me-2"></i>All Reminders
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="filterMode() === 'today'" (click)="setFilterMode('today')">
+        <i class="bi bi-calendar-day me-2 text-warning"></i>Today's Schedule
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="filterMode() === 'overdue'" (click)="setFilterMode('overdue')">
+        <i class="bi bi-calendar-x me-2 text-danger"></i>Overdue Follow-ups
+      </button>
+    </li>
+  </ul>
+</div>
+
+<!-- Reminders List -->
+@if (isLoading()) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else {
+  <div class="row g-3">
+    @for (lead of getFilteredReminders(); track lead.id) {
+      <div class="col-md-6 col-lg-4">
+        <div class="glass-card reminder-card h-100 d-flex flex-column justify-content-between" [class.border-overdue]="isOverdue(lead.nextFollowupDate)">
+          <div>
+            <!-- Alert Badge Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              @if (isOverdue(lead.nextFollowupDate)) {
+                <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill small fw-bold">
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i>OVERDUE
+                </span>
+              } @else {
+                <span class="badge bg-warning-subtle text-warning px-2.5 py-1.5 rounded-pill small fw-bold">
+                  <i class="bi bi-clock-fill me-1"></i>TODAY
+                </span>
+              }
+              <span class="badge bg-light text-dark border small">{{ lead.leadType.name }}</span>
+            </div>
+
+            <!-- Customer Meta -->
+            <h5 class="fw-bold font-display text-primary mb-1">{{ lead.customerName }}</h5>
+            <p class="text-secondary small mb-3">
+              <i class="bi bi-geo-alt-fill me-1 text-muted"></i>{{ lead.city || 'No City' }}
+            </p>
+            
+            <div class="mb-3 small">
+              <div class="mb-1">
+                <span class="text-secondary">Mobile:</span> <strong class="text-primary">{{ lead.mobile }}</strong>
+              </div>
+              <div class="mb-1">
+                <span class="text-secondary">Next Date:</span> 
+                <strong [class.text-danger]="isOverdue(lead.nextFollowupDate)" [class.text-warning]="!isOverdue(lead.nextFollowupDate)">
+                  {{ formatDate(lead.nextFollowupDate) }}
+                </strong>
+              </div>
+              <div class="mb-1">
+                <span class="text-secondary">Priority:</span> <strong class="text-primary">{{ lead.priority }}</strong>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <span class="text-secondary small d-block">Discussion details:</span>
+              <p class="text-muted small mb-0 text-truncate-2">{{ lead.discussionDetails || 'No discussion logged.' }}</p>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="d-flex gap-2 border-top pt-3 mt-auto">
+            <button class="btn btn-outline-success btn-sm w-50 d-flex align-items-center justify-content-center gap-2" (click)="openWhatsApp(lead)">
+              <i class="bi bi-whatsapp"></i>
+              <span>WhatsApp</span>
+            </button>
+            <a class="btn btn-primary btn-sm w-50 d-flex align-items-center justify-content-center gap-2" [routerLink]="['/leads', lead.id]">
+              <i class="bi bi-pencil-square"></i>
+              <span>Log Follow-up</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="col-12 text-center py-5 text-secondary">
+        <i class="bi bi-emoji-smile fs-1 mb-3 d-block text-muted"></i>
+        <p class="lead">All caught up! No follow-up reminders pending.</p>
+      </div>
+    }
+  </div>
+}
