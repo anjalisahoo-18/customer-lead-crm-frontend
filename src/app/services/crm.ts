@@ -62,7 +62,7 @@ export interface DashboardStats {
   providedIn: 'root'
 })
 export class CRMService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = 'https://customer-lead-crm-backend-kn98.onrender.com/api';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
