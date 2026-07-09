@@ -30,7 +30,7 @@
         <label for="usernameInput" class="text-secondary">Username</label>
       </div>
 
-      <div class="form-floating mb-3 text-start">
+      <div class="form-floating mb-4 text-start">
         <input 
           type="password" 
           class="form-control" 
@@ -39,19 +39,6 @@
           formControlName="password">
         <label for="passwordInput" class="text-secondary">Password</label>
       </div>
-
-      @if (isRegisterMode()) {
-        <div class="form-floating mb-4 text-start animate-fade-in">
-          <select 
-            class="form-select" 
-            id="roleInput" 
-            formControlName="role">
-            <option value="EXECUTIVE">Sales Executive</option>
-            <option value="ADMIN">Administrator</option>
-          </select>
-          <label for="roleInput" class="text-secondary">Role</label>
-        </div>
-      }
 
       <button 
         type="submit" 
