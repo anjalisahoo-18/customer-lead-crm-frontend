@@ -4,8 +4,12 @@
       <div class="logo-icon bg-primary text-white mx-auto mb-3">
         <i class="bi bi-rocket-takeoff fs-2"></i>
       </div>
-      <h2 class="fw-bold font-display text-primary">LeadCRM</h2>
-      <p class="text-secondary small">Sign in to manage your customer leads</p>
+      <h2 class="fw-bold font-display text-primary">
+        {{ isRegisterMode() ? 'Create Account' : 'LeadCRM' }}
+      </h2>
+      <p class="text-secondary small">
+        {{ isRegisterMode() ? 'Sign up to start managing customer leads' : 'Sign in to manage your customer leads' }}
+      </p>
     </div>
 
     @if (errorMessage()) {
@@ -26,7 +30,7 @@
         <label for="usernameInput" class="text-secondary">Username</label>
       </div>
 
-      <div class="form-floating mb-4 text-start">
+      <div class="form-floating mb-3 text-start">
         <input 
           type="password" 
           class="form-control" 
@@ -36,23 +40,36 @@
         <label for="passwordInput" class="text-secondary">Password</label>
       </div>
 
+      @if (isRegisterMode()) {
+        <div class="form-floating mb-4 text-start animate-fade-in">
+          <select 
+            class="form-select" 
+            id="roleInput" 
+            formControlName="role">
+            <option value="EXECUTIVE">Sales Executive</option>
+            <option value="ADMIN">Administrator</option>
+          </select>
+          <label for="roleInput" class="text-secondary">Role</label>
+        </div>
+      }
+
       <button 
         type="submit" 
         class="btn btn-primary w-100 py-3 fw-bold" 
         [disabled]="loginForm.invalid || isLoading()">
         @if (isLoading()) {
           <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-          Signing In...
+          {{ isRegisterMode() ? 'Registering...' : 'Signing In...' }}
         } @else {
-          Sign In
+          {{ isRegisterMode() ? 'Register' : 'Sign In' }}
         }
       </button>
     </form>
 
-    <div class="mt-4 text-secondary small">
-      <span class="d-block mb-1">Demo Credentials:</span>
-      <span class="badge bg-light text-dark border me-1">admin / admin123</span>
-      <span class="badge bg-light text-dark border">executive / exec123</span>
+    <div class="mt-4 text-center">
+      <a href="javascript:void(0)" (click)="toggleMode()" class="text-primary text-decoration-none small fw-semibold">
+        {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account? Register" }}
+      </a>
     </div>
   </div>
 </div>

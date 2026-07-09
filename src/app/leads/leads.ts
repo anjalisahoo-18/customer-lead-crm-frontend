@@ -94,6 +94,7 @@ export class LeadsComponent implements OnInit {
       customerName: this.filterName || null,
       mobile: this.filterMobile || null,
       search: this.globalSearch || null,
+      assignedExecutive: this.authService.currentRole() === 'EXECUTIVE' ? this.authService.getUserName() : null,
       page: this.page(),
       size: this.size,
       sort: 'createdDate,desc'
@@ -224,7 +225,8 @@ export class LeadsComponent implements OnInit {
       endDate: this.filterEndDate || null,
       customerName: this.filterName || null,
       mobile: this.filterMobile || null,
-      search: this.globalSearch || null
+      search: this.globalSearch || null,
+      assignedExecutive: this.authService.currentRole() === 'EXECUTIVE' ? this.authService.getUserName() : null
     };
 
     this.crmService.exportExcel(params).subscribe(blob => {
@@ -249,7 +251,8 @@ export class LeadsComponent implements OnInit {
       endDate: this.filterEndDate || null,
       customerName: this.filterName || null,
       mobile: this.filterMobile || null,
-      search: this.globalSearch || null
+      search: this.globalSearch || null,
+      assignedExecutive: this.authService.currentRole() === 'EXECUTIVE' ? this.authService.getUserName() : null
     };
 
     this.crmService.exportPdf(params).subscribe(blob => {

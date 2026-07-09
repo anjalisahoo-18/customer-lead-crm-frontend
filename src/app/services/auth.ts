@@ -23,6 +23,10 @@ export class AuthService {
     );
   }
 
+  registerApi(userData: any): Observable<any> {
+    return this.http.post<any>('https://customer-lead-crm-backend-kn98.onrender.com/api/users/register', userData);
+  }
+
   login(userData: { token: string; username: string; role: string; id: number }) {
     localStorage.setItem('crm_token', userData.token);
     localStorage.setItem('crm_username', userData.username);

@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CRMService, LeadType } from '../services/crm';
+import { AuthService } from '../services/auth';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-lead-types',
@@ -11,6 +13,8 @@ import { CRMService, LeadType } from '../services/crm';
 export class LeadTypesComponent implements OnInit {
   private crmService = inject(CRMService);
   private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   leadTypes = signal<LeadType[]>([]);
   isLoading = signal<boolean>(false);
@@ -26,6 +30,10 @@ export class LeadTypesComponent implements OnInit {
   });
 
   ngOnInit() {
+    if (this.authService.currentRole() !== 'ADMIN') {
+      this.router.navigate(['/dashboard']);
+      return;
+    }
     this.loadLeadTypes();
   }
 

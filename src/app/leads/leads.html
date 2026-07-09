@@ -210,9 +210,11 @@
                     <i class="bi bi-pencil-fill"></i>
                   </button>
                   <!-- Delete button -->
-                  <button class="btn btn-sm btn-outline-danger border-0 rounded-circle" (click)="onDelete(lead.id!)" title="Delete">
-                    <i class="bi bi-trash-fill"></i>
-                  </button>
+                  @if (authService.currentRole() === 'ADMIN') {
+                    <button class="btn btn-sm btn-outline-danger border-0 rounded-circle" (click)="onDelete(lead.id!)" title="Delete">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  }
                 </div>
               </td>
             </tr>
@@ -362,7 +364,7 @@
         </div>
         <div class="col-6">
           <label class="form-label text-secondary small fw-bold">Assigned Exec.</label>
-          <input type="text" class="form-control" formControlName="assignedExecutive" placeholder="Name">
+          <input type="text" class="form-control" formControlName="assignedExecutive" placeholder="Name" [readonly]="authService.currentRole() === 'EXECUTIVE'">
         </div>
       </div>
 

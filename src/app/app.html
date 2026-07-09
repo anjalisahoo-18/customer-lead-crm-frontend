@@ -16,10 +16,12 @@
           <i class="bi bi-people-fill"></i>
           <span>Customer Leads</span>
         </a>
-        <a class="nav-item" routerLink="/lead-types" routerLinkActive="active">
-          <i class="bi bi-list-task"></i>
-          <span>Lead Types</span>
-        </a>
+        @if (authService.currentRole() === 'ADMIN') {
+          <a class="nav-item" routerLink="/lead-types" routerLinkActive="active">
+            <i class="bi bi-list-task"></i>
+            <span>Lead Types</span>
+          </a>
+        }
         <a class="nav-item" routerLink="/reminders" routerLinkActive="active">
           <i class="bi bi-bell-fill"></i>
           <span>Follow-up Reminders</span>
