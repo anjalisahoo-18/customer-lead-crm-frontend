@@ -5,6 +5,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%);
   padding: 1.5rem;
+  position: relative;
 }
 
 body.dark-theme .login-wrapper {
@@ -43,4 +44,18 @@ body.dark-theme .login-card {
 
 .form-floating > .form-control:focus {
   border-color: var(--accent) !important;
+}
+
+.developer-credit {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+body.dark-theme .developer-credit {
+  color: rgba(255, 255, 255, 0.45);
 }
